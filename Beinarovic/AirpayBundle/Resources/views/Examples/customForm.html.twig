@@ -1,0 +1,42 @@
+{###########################################################
+#    Example of form rendering.
+###########################################################}
+{% extends 'BeinarovicAirpayBundle::body.html.twig' %}
+
+{# Use to overwrite form firld settings. #}
+{% form_theme airpayForm _self %} 
+
+{###########################################################
+#    Use to correctly display field names
+###########################################################}
+{% block field_widget %}
+    {% include 'BeinarovicAirpayBundle:Form:field_widget.html.twig' %}
+{% endblock field_widget %}
+{% block form_widget %}
+    {% include 'BeinarovicAirpayBundle:Form:field_widget.html.twig' %}
+{% endblock form_widget %}
+
+{% block content %}
+
+{###########################################################
+#    'action' is the return from getAction() method.
+###########################################################}
+    <form method="post" name="pform" action="{{ action }}">
+
+        {{ form_widget(airpayForm._cmd, { 'type': 'hidden' }) }}
+        {{ form_widget(airpayForm.merchant_id, { 'type': 'hidden' }) }}
+        {{ form_widget(airpayForm.amount, { 'type': 'hidden' }) }}
+        {{ form_widget(airpayForm.currency, { 'type': 'hidden' }) }}
+        {{ form_widget(airpayForm.invoice, { 'type': 'hidden' }) }}
+        {{ form_widget(airpayForm.language, { 'type': 'hidden' }) }}
+        {{ form_widget(airpayForm.cl_fname) }}
+        {{ form_widget(airpayForm.cl_lname) }}
+        {{ form_widget(airpayForm.cl_email) }}
+        {{ form_widget(airpayForm.cl_country) }}
+        {{ form_widget(airpayForm.cl_city) }}
+        {{ form_widget(airpayForm.description, { 'type': 'hidden' }) }}
+        
+        <input type="submit" value="Pay">
+    </form>
+
+{% endblock %}

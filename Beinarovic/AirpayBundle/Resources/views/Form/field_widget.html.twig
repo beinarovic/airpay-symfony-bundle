@@ -1,0 +1,5 @@
+{# 
+    Used to set needed names to fields and hide filles fields
+ #}
+{% set type = type|default() %}
+<input type="{{ type }}" name="{{ name }}" {{ block('widget_attributes') }} value="{{ value }}" />
