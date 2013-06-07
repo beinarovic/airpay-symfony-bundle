@@ -50,11 +50,12 @@ beinarovic_airpay:
 
 `merchant_id` and `merchant_secret` are mandatory fields, they must match thoes received from the Airpay service. 
 
-There are more available oprion fields:
-`is_sandbox` is `false` by default. For development this field should be changed to `true`. 
-`enable_logs` is `false` by default. If enabled this bundle will write logs to database.
-`url` is `https://www.airpayment.net/new/gateway/` by default. Airpay gateway URL.
-`sandbox_url` is `https://www.airpayment.net/sandbox/gateway/` by default. The airpay gateway URL got sandbox.
+There are more available option fields:
+
+* `is_sandbox` is `false` by default. For development this field should be changed to `true`. 
+* `enable_logs` is `false` by default. If enabled this bundle will write logs to database.
+* `url` is `https://www.airpayment.net/new/gateway/` by default. Airpay gateway URL.
+* `sandbox_url` is `https://www.airpayment.net/sandbox/gateway/` by default. The airpay gateway URL got sandbox.
 
 Finaly you have to update your database schema.
 
@@ -65,14 +66,14 @@ php app/console doctrine:schema:update --force
 2) Usage
 ----------------------------------
 
-This bundle is used as a service, you can retrieve it from the container. This service is the `AirpayManager`, that doeas all the magic.
+This bundle is used as a service, you can retrieve it from the container. This service is the `AirpayManager`, that does all the magic.
 
 <pre>
 $airpaymanager = $this->get('beinarovic_airpay_manager');
 </pre>
 
 ## The Form
-This bundle use Symfony forms. You must create the payment entity, this is realized dy the `AirpayManager`, configure it and render a form for it.
+This bundle uses Symfony forms. You must create the payment entity, this is realized dy the `AirpayManager`, configure it and render a form for it.
 
 <code>
     $airpaymanager = $this->get('beinarovic_airpay_manager');
