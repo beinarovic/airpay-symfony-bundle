@@ -2,7 +2,7 @@
     "name": "beinarovic/airpay-symfony-bundle",
     "type": "symfony-bundle",
     "description": "A bundle for Symfony2.2, that manages AirPay payments.",
-    "keywords": ["airpay","pay","air","payment"],
+    "keywords": ["airpay","pay","air","symfony","payment"],
     "homepage": "https://github.com/ebeinarovics/airpay-symfony-bundle",
     "license": "MIT",
     "authors": [
