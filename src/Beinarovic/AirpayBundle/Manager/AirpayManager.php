@@ -118,6 +118,8 @@ class AirpayManager
                     == $queryParameters['transaction_hash']) {
                 
                 if($queryParameters['status'] == 1) {
+                    $this->payment = $this->fetchTransaction($queryParameters['transaction_id'], true);
+                    
                     return true;
                 }
             }
@@ -320,6 +322,8 @@ class AirpayManager
                     $logEvent = new AirpayLogEvent('Got and updated payment', null, $payment);
                     $this->eventDispatcher->dispatch('beinarovic_airpay.log', $logEvent);
                 }
+                
+                return $payment;
             }
 
             $this->errors[] = AirpayError::HASH_DOES_NOT_MATCH;
