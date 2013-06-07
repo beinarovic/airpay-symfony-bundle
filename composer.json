@@ -1,0 +1,27 @@
+{
+    "name": "beinarovic/airpay-symfony-bundle",
+    "type": "symfony-bundle",
+    "description": "A bundle for Symfony2.2, that manages AirPay payments.",
+    "keywords": ["airpay","pay","air","payment"],
+    "homepage": "https://github.com/ebeinarovics/airpay-symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Edmund Beinaroivc",
+            "email": "edmund@beinarovic.lv",
+            "homepage": "https://github.com/ebeinarovics/airpay-symfony-bundle",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "symfony/symfony": "2.2.*",
+        "doctrine/orm": "~2.2,>=2.2.3",
+        "doctrine/doctrine-bundle": "1.2.*",
+    },
+    "autoload": {
+        "psr-0": {
+            "Beinarovic\\AirpayBundle": "src"
+        }
+    }
+}
