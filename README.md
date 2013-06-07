@@ -10,6 +10,7 @@ AirpayBundle can be installed via Composer.
 You can find this bundle on packagist: https://packagist.org/packages/beinarovic/airpay-symfony-bundle
 
 <pre>
+<code>
 // composer.json
 {
     // ...
@@ -19,12 +20,15 @@ You can find this bundle on packagist: https://packagist.org/packages/beinarovic
 
     }
 }
+</code>
 </pre>
 
 Then, you can install the new dependencies by running Composer's update command from the directory where your composer.json file is located:
 
 <pre>
+<code>
     php composer.phar update
+</code>
 </pre>
 
 You have to add this bundle to `AppKernel.php` register bundles method, so that Symfony can use it.
@@ -67,16 +71,17 @@ This bundle is used as a service, you can retrieve it from the container. This s
 $airpaymanager = $this->get('beinarovic_airpay_manager');
 </pre>
 
-### The Form
+## The Form
 This bundle use Symfony forms. You must create the payment entity, this is realized dy the `AirpayManager`, configure it and render a form for it.
 
-<pre>
-    $airpaymanager = $this->getAirpayManager();
+<code>
+    $airpaymanager = $this->get('beinarovic_airpay_manager');
     
     $payment = $airpaymanager->createPayment();
     
     /**
-    * Your custom field (user's id or whatever you need). This field is not posted to the gateway, it is stored and retrieved from the database.
+    * Your custom field (user's id or whatever you need). This field is not posted to the gateway, 
+    * it is stored and retrieved from the database.
     **/
     $payment->setCustom($userid); 
     
@@ -102,28 +107,28 @@ This bundle use Symfony forms. You must create the payment entity, this is reali
         'airpayForm'    => $form->createView(),
         'action'        => $airpaymanager->getFormAction() // This retrieves the action URL.
     );
-</pre>
+</code>
 
 In the template you should set a custom form rendering theme. Tou shold add these blocks to your view:
 
 <pre>    
+<code>
     {# Use this to overwrite form field settings. #}
-    {% form_theme airpayForm _self %} 
+    {% form_theme airpayForm _self %}
     {% block field_widget %}
         {% include 'BeinarovicAirpayBundle:Form:field_widget.html.twig' %}
     {% endblock field_widget %}
     {% block form_widget %}
         {% include 'BeinarovicAirpayBundle:Form:field_widget.html.twig' %}
     {% endblock form_widget %}
-    
-    {% block content %}
+</code>
 </pre>
     
 Example of form rendering in the view.
     
 <pre>
-        <form method="post" name="pform" action="{{ action }}">
-    
+<code>
+        &lt;form method="post" name="pform" action="{{ action }}"&gt;
             {{ form_widget(airpayForm._cmd, { 'type': 'hidden' }) }}
             {{ form_widget(airpayForm.merchant_id, { 'type': 'hidden' }) }}
             {{ form_widget(airpayForm.amount, { 'type': 'hidden' }) }}
@@ -136,9 +141,39 @@ Example of form rendering in the view.
             {{ form_widget(airpayForm.cl_country) }}
             {{ form_widget(airpayForm.cl_city) }}
             {{ form_widget(airpayForm.description, { 'type': 'hidden' }) }}
-            
-            <input type="submit" value="Pay">
-        </form>
+            &lt;input type="submit" value="Pay"&gt;
+        &lt;/form&gt;
+</code>
 </pre>
 
+## User Redirect Action
 
+At the user redirect action, you can validate and retrieve the payment. In this action, you shold not store the payment, just show the result to the user.
+<pre>
+<code>
+    $airpaymanager = $this->get('beinarovic_airpay_manager');
+
+    if ($airpaymanager->paymentPassed() === true) {
+        // Your code if payment succeeded.
+    }
+    // your code in case of fail.
+</code>
+</pre>
+
+Also after running `paymentPassed()`, you can use `getPayment()`, which will return the `AirpayPayment` entity object or `false` if the payment was not retrieved.
+
+## Notification Listener
+
+<pre>
+<code>
+    $airpaymanager = $this->get('beinarovic_airpay_manager');
+    
+    if ($airpaymanager->validate() === true) {
+        $payment = $airpaymanager->getPayment();
+        
+        $userid = $payment->getCustom();
+        
+        // Your code. Add balance ot whatever...
+    }
+</code>
+</pre>
