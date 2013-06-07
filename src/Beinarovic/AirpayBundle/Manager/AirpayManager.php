@@ -144,6 +144,34 @@ class AirpayManager
     }
     
     /**
+     * Chacks if payment is a reafund.
+     * 
+     * @return boolean
+     */
+    public function isRefund()
+    {
+        if ($this->payment->getStatus() == AirpayPayment::STATUS_REFUND) {
+            return true;
+        } 
+        
+        return false;
+    }
+    
+    /**
+     * Chacks if payment is a reafund.
+     * 
+     * @return boolean
+     */
+    public function isSuccessful()
+    {
+        if ($this->payment->getStatus() == AirpayPayment::STATUS_SUCCESS) {
+            return true;
+        } 
+        
+        return false;
+    }
+    
+    /**
      * Checks if received payment is valid. Saves the payment.
      * 
      * @return boolean
@@ -168,7 +196,15 @@ class AirpayManager
                 return false;
             }
             
-            return true;
+            if ($this->payment->getStatus() == AirpayPayment::STATUS_SUCCESS) {
+                return true;
+            } 
+            
+            $this->errors[] = AirpayError::HASH_DOES_NOT_MATCH;
+            $logEvent = new AirpayLogEvent('Payment status is not successful', AirpayError::HASH_DOES_NOT_MATCH, $this->payment);
+            $this->eventDispatcher->dispatch('beinarovic_airpay.log', $logEvent);
+        
+            return false;
         }
         $this->errors[] = AirpayError::HASH_DOES_NOT_MATCH;
         $logEvent = new AirpayLogEvent('Hash does not match', AirpayError::HASH_DOES_NOT_MATCH);
