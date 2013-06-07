@@ -7,6 +7,7 @@ A bundle for Symfony2.2, that manages AirPay payments.
 ---------------------
 
 AirpayBundle can be installed via Composer.
+You can find this bundle on packagist: https://packagist.org/packages/beinarovic/airpay-symfony-bundle
 
 <pre>
 // composer.json
@@ -19,3 +20,125 @@ AirpayBundle can be installed via Composer.
     }
 }
 </pre>
+
+Then, you can install the new dependencies by running Composer's update command from the directory where your composer.json file is located:
+
+<pre>
+    php composer.phar update
+</pre>
+
+You have to add this bundle to `AppKernel.php` register bundles method, so that Symfony can use it.
+<pre>
+// in AppKernel::registerBundles()
+$bundles = array(
+    // ...
+    new Beinarovic\AirpayBundle\BeinarovicAirpayBundle(),
+);
+</pre>
+
+In your `config.yml` you must configure this bundle. 
+
+<pre>
+beinarovic_airpay:
+    merchant_id:        12345
+    merchant_secret:    MySecretKey
+</pre>
+
+`merchant_id` and `merchant_secret` are mandatory fields, they must match thoes received from the Airpay service. 
+
+There are more available oprion fields:
+`is_sandbox` is `false` by default. For development this field should be changed to `true`. 
+`enable_logs` is `false` by default. If enabled this bundle will write logs to database.
+`url` is `https://www.airpayment.net/new/gateway/` by default. Airpay gateway URL.
+`sandbox_url` is `https://www.airpayment.net/sandbox/gateway/` by default. The airpay gateway URL got sandbox.
+
+Finaly you have to update your database schema.
+
+<pre>
+php app/console doctrine:schema:update --force
+</pre>
+
+2) Usage
+----------------------------------
+
+This bundle is used as a service, you can retrieve it from the container. This service is the `AirpayManager`, that doeas all the magic.
+
+<pre>
+$airpaymanager = $this->get('beinarovic_airpay_manager');
+</pre>
+
+### The Form
+This bundle use Symfony forms. You must create the payment entity, this is realized dy the `AirpayManager`, configure it and render a form for it.
+
+<pre>
+    $airpaymanager = $this->getAirpayManager();
+    
+    $payment = $airpaymanager->createPayment();
+    
+    /**
+    * Your custom field (user's id or whatever you need). This field is not posted to the gateway, it is stored and retrieved from the database.
+    **/
+    $payment->setCustom($userid); 
+    
+    /**
+    * Here you can pre set form variables.
+    **/
+    $payment->setAmount($package);
+    $payment->setCurrency('EUR');
+    $payment->setClEmail('edmund@beinarovic.lv');
+    $payment->setClCity('city');
+    $payment->setClFname('firstname');
+    $payment->setClLname('lastname');
+    $payment->setClCountry('CC');
+    $payment->setDescription('test transaction');
+    $payment->setLanguage('ENG');
+    
+    /**
+    * `createForm` returns a `FormInterface` object witch has to be created and displayed.
+    **/
+    $form = $airpaymanager->createForm($payment);
+    
+    return array(
+        'airpayForm'    => $form->createView(),
+        'action'        => $airpaymanager->getFormAction() // This retrieves the action URL.
+    );
+</pre>
+
+In the template you should set a custom form rendering theme. Tou shold add these blocks to your view:
+
+<pre>    
+    {# Use this to overwrite form field settings. #}
+    {% form_theme airpayForm _self %} 
+    {% block field_widget %}
+        {% include 'BeinarovicAirpayBundle:Form:field_widget.html.twig' %}
+    {% endblock field_widget %}
+    {% block form_widget %}
+        {% include 'BeinarovicAirpayBundle:Form:field_widget.html.twig' %}
+    {% endblock form_widget %}
+    
+    {% block content %}
+</pre>
+    
+Example of form rendering in the view.
+    
+<pre>
+        <form method="post" name="pform" action="{{ action }}">
+    
+            {{ form_widget(airpayForm._cmd, { 'type': 'hidden' }) }}
+            {{ form_widget(airpayForm.merchant_id, { 'type': 'hidden' }) }}
+            {{ form_widget(airpayForm.amount, { 'type': 'hidden' }) }}
+            {{ form_widget(airpayForm.currency, { 'type': 'hidden' }) }}
+            {{ form_widget(airpayForm.invoice, { 'type': 'hidden' }) }}
+            {{ form_widget(airpayForm.language, { 'type': 'hidden' }) }}
+            {{ form_widget(airpayForm.cl_fname) }}
+            {{ form_widget(airpayForm.cl_lname) }}
+            {{ form_widget(airpayForm.cl_email) }}
+            {{ form_widget(airpayForm.cl_country) }}
+            {{ form_widget(airpayForm.cl_city) }}
+            {{ form_widget(airpayForm.description, { 'type': 'hidden' }) }}
+            
+            <input type="submit" value="Pay">
+        </form>
+</pre>
+
+
