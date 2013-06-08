@@ -220,6 +220,8 @@ class AirpayManager
      * @return FormInterface
 	 */
 	public function createForm(AirpayPayment $payment, $save = true) {
+	$hash = md5($payment->getAmount().$payment->getCurrency().$this->merchant['id'].$this->merchant['secret']);
+	$payment->setHash($hash);
         if ($save == true) {
             $this->_em->persist($payment);
             $this->_em->flush($payment);
