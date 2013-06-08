@@ -47,7 +47,7 @@ class AirpayPayment
     /**
      * @var float
      *
-     * @ORM\Column(name="amount", type="decimal", nullable=true)
+     * @ORM\Column(name="amount", type="decimal", nullable=true, scale=2)
      */
     private $amount;
 
