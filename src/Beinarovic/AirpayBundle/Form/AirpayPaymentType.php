@@ -27,10 +27,7 @@ class AirpayPaymentType extends AbstractType
             ->add('cl_country', 'text', array('property_path' => 'clCountry'))
             ->add('cl_city', 'text', array('property_path' => 'clCity'))
             ->add('description', 'text', array('property_path' => 'description'))
-            ->add('hash', 'text', array(
-                'mapped'    => false,
-                )
-            )
+            ->add('hash', 'text')
         ;
     }
 
