@@ -12,8 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class AirpayPayment
 {
-    const STATUS_NEW            = -2; // Custom, if no status retrieved
-    const STATUS_EXPIRED        = -1; // transaction expired with no try for the payment, means that the client just closed the AirPay window without proceeding the payment
+	const STATUS_NEW            = -2; // Custom, if no status retrieved
+	const STATUS_EXPIRED        = -1; // transaction expired with no try for the payment, means that the client just closed the AirPay window without proceeding the payment
 	const STATUS_WINDOW_OPEN    = 0; // transaction is created by payment() or payment_req() methods of the AirPay class, means that the AirPay window opened
 	const STATUS_SUCCESS        = 1; // transaction is successfull, means that the merchant can provide the service or product to the client
 	const STATUS_IN_PROCESS     = 2; // transaction is pending, means that the client have tried to pay and the payment system is still processing the payment
