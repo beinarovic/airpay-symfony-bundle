@@ -177,7 +177,7 @@ class SomeController extends Controller
 {
     
     /**
-     * @Route("/airpay/notification", name="roamerapp_airpay")
+     * @Route("/airpay/notification", name="your_airpay_nitifications")
      */
     public function airpayNofificationAction()
     {
@@ -186,14 +186,21 @@ class SomeController extends Controller
         if ($airpaymanager->validate() === true) {
             $payment = $airpaymanager->getPayment();
             
-            $userid = $payment->getCustom();
-            
             if ($airpaymanager->isSuccessful()) {
-                // Your code. Add balance ot whatever...
-            } else if ($airpaymanager->isRefund()) {
-                // Here you manage refunds
+                
+                $userid = $payment->getCustom();
+                $amount = $payment->getAmount()/100;
+                
+                // Your payment management.
+                
+                $airpaymanager->closePayment();
+            }
+            
+            if ($airpaymanager->isRefund()) {
+                // Here you manage refunds.
             }
         }
+        // ...
     }
 </code>
 </pre>
