@@ -155,11 +155,19 @@ class AirpayPayment
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
     private $updatedAt;
+
+    /**
+     * @var closed
+     *
+     * @ORM\Column(name="closed", type="boolean", nullable=false)
+     */
+    private $closed;
     
     public function __construct($merchantId) {
         $this->merchantId = $merchantId;
         $this->createdAt = new \DateTime();
         $this->status = self::STATUS_NEW;
+        $this->closed = false;
     }
 
     /**
@@ -623,5 +631,26 @@ class AirpayPayment
     public function getTransactionId()
     {
         return $this->transactionId;
+    }
+
+    /**
+     * @param bool $closed
+     * @return AirpayPayment
+     */
+    public function setClosed($closed)
+    {
+        $this->closed = $closed;
+
+        return $this;
+    }
+
+    /**
+     * Get closed
+     *
+     * @return bool 
+     */
+    public function isClosed()
+    {
+        return $this->closed;
     }
 }
