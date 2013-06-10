@@ -203,7 +203,7 @@ class AirpayPayment
     {
         $this->transactionId = isset($resp['transaction_id']) ? $resp['transaction_id'] : $this->transactionId;
         $this->amount = isset($resp['amount']) ? $resp['amount'] : $this->amount;
-        $this->currency = isset($resp['currency']) ? $resp['curency'] : $this->currency;
+        $this->currency = isset($resp['currency']) ? $resp['currency'] : $this->currency;
         $this->description = isset($resp['description']) ? $resp['description'] : $this->description;
         $this->status = isset($resp['status_id']) ? $resp['status_id'] : $this->status;
         $this->hash = isset($resp['hash']) ? $resp['hash'] : $this->hash;
