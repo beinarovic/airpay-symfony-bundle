@@ -163,18 +163,37 @@ At the user redirect action, you can validate and retrieve the payment. In this 
 
 Also after running `paymentPassed()`, you can use `getPayment()`, which will return the `AirpayPayment` entity object or `false` if the payment was not retrieved.
 
-## Notification Listener
+## Status Receiver
+
+This has to be placed into the action that is called from the Airpay. This URL is set up as the `Status URL` in the Airpay administration.
 
 <pre>
 <code>
-    $airpaymanager = $this->get('beinarovic_airpay_manager');
+//...
+use Beinarovic\AirpayBundle\Entity\AirpayPayment;
+//...
+
+class SomeController extends Controller
+{
     
-    if ($airpaymanager->validate() === true) {
-        $payment = $airpaymanager->getPayment();
+    /**
+     * @Route("/airpay/notification", name="roamerapp_airpay")
+     */
+    public function airpayNofificationAction()
+    {
+        $airpaymanager = $this->get('beinarovic_airpay_manager');
         
-        $userid = $payment->getCustom();
-        
-        // Your code. Add balance ot whatever...
+        if ($airpaymanager->validate() === true) {
+            $payment = $airpaymanager->getPayment();
+            
+            $userid = $payment->getCustom();
+            
+            if ($airpaymanager->isSuccessful()) {
+                // Your code. Add balance ot whatever...
+            } else if ($airpaymanager->isRefund()) {
+                // Here you manage refunds
+            }
+        }
     }
 </code>
 </pre>
