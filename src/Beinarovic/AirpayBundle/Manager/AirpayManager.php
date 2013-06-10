@@ -336,12 +336,6 @@ class AirpayManager
         $oldPayment = $this->getPaymentRepository()->findByTransactionId($transactionId);
         
         if ($oldPayment === null || $update === true) {
-            $data = array (
-                '_cmd'		=> "request",
-                'invoice'	=> $transactionId,
-                'hash' 		=> md5($transactionId.$this->merchant['id'].$this->merchant['secret'])
-            );
-
             $postData = $this->request->request->all();
 
             if (isset($postData['error_code']))	{
