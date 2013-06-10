@@ -193,6 +193,7 @@ class SomeController extends Controller
                 
                 // Your payment management.
                 
+                // This will mark this payment as closed.
                 $airpaymanager->closePayment();
             }
             
