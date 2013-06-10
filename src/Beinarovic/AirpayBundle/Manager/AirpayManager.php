@@ -56,6 +56,11 @@ class AirpayManager
     private $errors = array();
     
     /**
+     * @var bool $alreadyRefunded
+     */
+    private $alreadyRefunded = false;
+    
+    /**
      * Configuration variables from dependency injection.
      */
 	private $url        = null;
@@ -174,7 +179,8 @@ class AirpayManager
      */
     public function isSuccessful()
     {
-        if ($this->payment->getStatus() == AirpayPayment::STATUS_SUCCESS) {
+        if ($this->payment->getStatus() == AirpayPayment::STATUS_SUCCESS 
+                && $this->payment->isClosed() === false) {
             return true;
         } 
         
@@ -203,6 +209,15 @@ class AirpayManager
                 $logEvent = new AirpayLogEvent('Hash doeas not match', AirpayError::HASH_DOES_NOT_MATCH);
                 $this->eventDispatcher->dispatch('beinarovic_airpay.log', $logEvent);
                 
+                return false;
+            }
+            
+            if ($this->alreadyRefunded === true 
+                    && $responseData['status_id'] == AirpayPayment::STATUS_REFUND) {
+                $this->errors[] = AirpayError::DUBLICATE_REFUND;
+                $logEvent = new AirpayLogEvent('Dublicate refund', AirpayError::PAYMENT_ALREADY_CLOSED, $this->payment);
+                $this->eventDispatcher->dispatch('beinarovic_airpay.log', $logEvent);
+
                 return false;
             }
             
@@ -353,7 +368,7 @@ class AirpayManager
                 $invoice = $postData['mc_transaction_id'];
 
                 $payment = $this->getPaymentRepository()->findByInvoice($invoice);
-
+                
                 if  ($payment === null) {
                     $logEvent = new AirpayLogEvent('Payment not received', AirpayError::PAYMENT_NOT_FOUND);
                     $this->eventDispatcher->dispatch('beinarovic_airpay.log', $logEvent);
@@ -361,6 +376,11 @@ class AirpayManager
                 
                     return null;
                 }
+                
+                if ($payment->getStatus() == AirpayPayment::STATUS_REFUND) {
+                    $this->alreadyRefunded = true;
+                }
+                
                 $payment->bindResponse($postData);
 
                 if ($update === true) {

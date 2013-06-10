@@ -14,6 +14,7 @@ class AirpayError {
     const GOT_WRONG_STATUS = 5;
     const RECEIVED_ERROR_CODE = 6;
     const PAYMENT_ALREADY_CLOSED = 7;
+    const DUBLICATE_REFUND = 8;
 }
 
 ?>
