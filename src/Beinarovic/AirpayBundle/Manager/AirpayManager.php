@@ -118,8 +118,6 @@ class AirpayManager
                     == $queryParameters['transaction_hash']) {
                 
                 if($queryParameters['status'] == AirpayPayment::STATUS_SUCCESS) {
-                    $this->payment = $this->fetchTransaction($queryParameters['transaction_id'], true);
-                    
                     return true;
                 }
             }
@@ -208,7 +206,7 @@ class AirpayManager
                 return false;
             }
             
-            if ($this->payment->getStatus() === AirpayPayment::STATUS_SUCCESS) {
+            if ((int)$this->payment->getStatus() === AirpayPayment::STATUS_SUCCESS) {
 
                 if ($this->payment->isClosed() === true) {
                     $this->errors[] = AirpayError::PAYMENT_ALREADY_CLOSED;
@@ -219,7 +217,7 @@ class AirpayManager
                 }
 
                 return true;
-            } else if ($this->payment->getStatus() === AirpayPayment::STATUS_REFUND) {
+            } else if ((int)$this->payment->getStatus() === AirpayPayment::STATUS_REFUND) {
                 return true;
             }
             
