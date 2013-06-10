@@ -352,7 +352,9 @@ class AirpayManager
                 $formated[$key] = $value;
             }
 
-            if (isset($formated['error_code']))	{
+            if (isset($formated['error_code']) && 
+                    ($formated['error_code'] !== AirpayPayment::STATUS_SUCCESS && 
+                    $formated['error_code'] !== AirpayPayment::STATUS_REFUND))	{
                 $this->errors[] = AirpayError::RECEIVED_ERROR_CODE;
                 $logEvent = new AirpayLogEvent('Got error code: '.$formated['error_code'], AirpayError::HASH_DOES_NOT_MATCH);
                 $this->eventDispatcher->dispatch('beinarovic_airpay.log', $logEvent);
