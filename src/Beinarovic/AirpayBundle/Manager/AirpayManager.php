@@ -206,7 +206,7 @@ class AirpayManager
                 return false;
             }
             
-            if ((int)$this->payment->getStatus() === AirpayPayment::STATUS_SUCCESS) {
+            if ((int)$this->payment->getStatus() == AirpayPayment::STATUS_SUCCESS) {
 
                 if ($this->payment->isClosed() === true) {
                     $this->errors[] = AirpayError::PAYMENT_ALREADY_CLOSED;
@@ -217,7 +217,7 @@ class AirpayManager
                 }
 
                 return true;
-            } else if ((int)$this->payment->getStatus() === AirpayPayment::STATUS_REFUND) {
+            } else if ((int)$this->payment->getStatus() == AirpayPayment::STATUS_REFUND) {
                 return true;
             }
             
@@ -246,7 +246,7 @@ class AirpayManager
         if ($save == true) {
             $this->_em->persist($payment);
             $this->_em->flush($payment);
-            $logEvent = new AirpayLogEvent('Created form and saved payment', AirpayError::HASH_DOES_NOT_MATCH, $payment);
+            $logEvent = new AirpayLogEvent('Created form and saved payment', null, $payment);
             $this->eventDispatcher->dispatch('beinarovic_airpay.log', $logEvent);
         }
         

@@ -35,7 +35,7 @@ class BeinarovicAirpayExtension extends Extension
         }
         else
         {
-            $container->setParameter('beinarovic.airpay.url', $config['sandbox_url']);
+            $container->setParameter('beinarovic.airpay.url', $config['url']);
         }
 
         $loader->load('services.xml');
