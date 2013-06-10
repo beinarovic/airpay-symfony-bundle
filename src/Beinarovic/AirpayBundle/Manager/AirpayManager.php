@@ -344,29 +344,21 @@ class AirpayManager
                 'hash' 		=> md5($transactionId.$this->merchant['id'].$this->merchant['secret'])
             );
 
-            $response = $this->sendRequest($this->url, $data);
+            $postData = $this->request->request->all();
 
-            $array = explode('&', $response);
-            for ($i = 0; $i < sizeof($array); $i++) {
-                list($key, $value) = explode('=', $array[$i]);
-                $formated[$key] = $value;
-            }
-
-            if (isset($formated['error_code']) && 
-                    ($formated['error_code'] != AirpayPayment::STATUS_SUCCESS && 
-                    $formated['error_code'] != AirpayPayment::STATUS_REFUND))	{
+            if (isset($postData['error_code']))	{
                 $this->errors[] = AirpayError::RECEIVED_ERROR_CODE;
-                $logEvent = new AirpayLogEvent('Got error code: '.$formated['error_code'], AirpayError::HASH_DOES_NOT_MATCH);
+                $logEvent = new AirpayLogEvent('Got error code: '.$postData['error_code'], AirpayError::HASH_DOES_NOT_MATCH);
                 $this->eventDispatcher->dispatch('beinarovic_airpay.log', $logEvent);
             
                 return null;
             }
 
-            if (md5($formated['transaction_id'].$formated['amount'].$formated['currency']
-                    .$this->merchant['id'].$formated['status_id'].$this->merchant['secret']) 
-                    == $formated['hash']) {
+            if (md5($postData['transaction_id'].$postData['amount'].$postData['currency']
+                    .$this->merchant['id'].$postData['status_id'].$this->merchant['secret']) 
+                    == $postData['hash']) {
 
-                $invoice = $formated['mc_transaction_id'];
+                $invoice = $postData['mc_transaction_id'];
 
                 $payment = $this->getPaymentRepository()->findByInvoice($invoice);
 
@@ -377,7 +369,7 @@ class AirpayManager
                 
                     return null;
                 }
-                $payment->bindResponse($formated);
+                $payment->bindResponse($postData);
 
                 if ($update === true) {
                     $payment->setUpdatedAt(new \DateTime());
