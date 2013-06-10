@@ -117,7 +117,7 @@ class AirpayManager
                     .$this->merchant['id'].$this->merchant['secret']) 
                     == $queryParameters['transaction_hash']) {
                 
-                if($queryParameters['status'] == 1) {
+                if($queryParameters['status'] == AirpayPayment::STATUS_SUCCESS) {
                     $this->payment = $this->fetchTransaction($queryParameters['transaction_id'], true);
                     
                     return true;
@@ -131,6 +131,18 @@ class AirpayManager
         return false;
     }
     
+    /**
+     * Closes the payment.
+     */
+    public function closePayment() 
+    {
+        if ($this->payment !== null) {
+            $this->payment->setClosed(true);
+
+            $this->_em->flush($this->payment);
+        }
+    }
+
     public function getPayment() {
         if ($this->payment !== null) {
             return $this->payment;
@@ -196,9 +208,20 @@ class AirpayManager
                 return false;
             }
             
-            if ($this->payment->getStatus() == AirpayPayment::STATUS_SUCCESS) {
+            if ($this->payment->getStatus() === AirpayPayment::STATUS_SUCCESS) {
+
+                if ($this->payment->isClosed() === true) {
+                    $this->errors[] = AirpayError::PAYMENT_ALREADY_CLOSED;
+                    $logEvent = new AirpayLogEvent('Transaction is already closed', AirpayError::PAYMENT_ALREADY_CLOSED, $this->payment);
+                    $this->eventDispatcher->dispatch('beinarovic_airpay.log', $logEvent);
+
+                    return false;
+                }
+
                 return true;
-            } 
+            } else if ($this->payment->getStatus() === AirpayPayment::STATUS_REFUND) {
+                return true;
+            }
             
             $this->errors[] = AirpayError::HASH_DOES_NOT_MATCH;
             $logEvent = new AirpayLogEvent('Payment status is not successful', AirpayError::HASH_DOES_NOT_MATCH, $this->payment);
